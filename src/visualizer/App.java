@@ -3,7 +3,6 @@ package visualizer;
 import java.awt.*;
 import java.awt.event.*;
 import graph.*;
-import algorithms.*;
 import util.*;
 
 /**
