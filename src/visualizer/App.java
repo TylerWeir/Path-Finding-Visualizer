@@ -22,7 +22,7 @@ public class App extends Frame{
             public void windowClosing(WindowEvent e) {System.exit(0);}
         });
         setSize(400, 300);
-        appCanvas = new CvApp();
+        appCanvas = new CvApp(10);
         add("Center", appCanvas);
         setCursor(Cursor.getPredefinedCursor( Cursor.CROSSHAIR_CURSOR));
         setVisible(true);
@@ -37,9 +37,10 @@ public class App extends Frame{
 class CvApp extends Canvas {
     int centerX, centerY;
     float pixelSize, rWidth = 10.0F, rHeight = 10.0F, xP = 1000000, yP;
+    Node[][] board;
 
     // Default constructor
-    CvApp() {
+    CvApp(int n) {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent evt) {
                 xP = fx(evt.getX()); 
@@ -47,40 +48,42 @@ class CvApp extends Canvas {
                 repaint();
             }
         });
+
+        this.board = new Node[n][n];
+        // Generate Board
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                this.board[i][j] = new Node(i+j);
+            }
+        }
     }
 
     /**
      * 
      */
     public void run(int n) {
-        Node[][] board = new Node[n][n];
 
-        // Generate Board
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                board[i][j] = new Node(i+j);
-            }
-        }
-        
         //Generate the graph
         Graph<Node> graph = new Graph<Node>();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                graph.addVertex(board[i][j]);
+                graph.addVertex(this.board[i][j]);
 
                 if (i > 0) {
                     // Add edge to node above
-                    graph.addEdge(board[i][j], board[i-1][j]);
-                    graph.addEdge(board[i-1][j], board[i][j]);
+                    graph.addEdge(this.board[i][j], this.board[i-1][j]);
+                    graph.addEdge(this.board[i-1][j], this.board[i][j]);
                 }
 
                 if (j > 0) {
                     // Add edge to node behind
-                    graph.addEdge(board[i][j], board[i][j-1]);
-                    graph.addEdge(board[i][j-1], board[i][j]);
+                    graph.addEdge(this.board[i][j], this.board[i][j-1]);
+                    graph.addEdge(this.board[i][j-1], this.board[i][j]);
                 }
             }
         }
+        BreadthFirstSearch.bfs(graph, this.board[1][1]);
+        repaint();
     }
 
     void initGraphics() {
@@ -119,6 +122,14 @@ class CvApp extends Canvas {
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
+                // Set the color of the node
+                if (this.board[i][j].isVisited()) {
+                    g.setColor((Color.red));
+                } else {
+                    g.setColor(Color.lightGray);
+                }
+                g.fillRect(iX(-5f + rWidth / 10 *j), iY(5f - rHeight / 10 * i), (int)(rWidth / 10 / pixelSize), (int)(rWidth / 10 / pixelSize)); 
+                g.setColor(Color.black);
                 g.drawRect(iX(-5f + rWidth / 10 *j), iY(5f - rHeight / 10 * i), (int)(rWidth / 10 / pixelSize), (int)(rWidth / 10 / pixelSize)); 
             }
         }

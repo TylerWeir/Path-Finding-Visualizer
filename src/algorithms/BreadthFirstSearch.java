@@ -2,23 +2,24 @@ package algorithms;
 
 import graph.*;
 import java.util.*;
+import util.*;
 
 public class BreadthFirstSearch {
 
-    public Graph<Integer> graph;
+    public static void bfs(Graph<Node> graph, Node s) {
+        Stack<Node> S = new Stack<Node>();
+        S.push(s);
 
-    // Default constructor
-    public BreadthFirstSearch(Graph<Integer> graph) {
-        this.graph = graph;
-        Stack stack = new Stack();
+        while (!S.empty()) {
+            Node u = S.pop();
+            if(!u.isVisited()) {
+                u.visit();
+                for (Node n : graph.getNeighbors(u)) {
+                    if(!n.isVisited()) {
+                        S.push(n);
+                    }
+                }
+            }
+        }
     }
-
-    public Graph<Integer> getGraph() {
-        return this.graph;
-    }
-
-
-
-
-
 }
