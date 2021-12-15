@@ -7,15 +7,17 @@ import algorithms.*;
 import util.*;
 
 /**
+ *  This class creates the window that holds application UI.
+ *  It was created using 'Computer Graphics for Java Programmers' by L.Ammeral and K.Zhang.
  * 
+ *  @author Tyler Weir
  */
-
 public class App extends Frame{
 
-    CvApp appCanvas;
+    public CvApp appCanvas;
 
     // Default constructor for the application
-    App(int n) {
+    public App(int n) {
         // Init up the graphical ui
         super("Path Finding Algorithm Visualizer");
         addWindowListener(new WindowAdapter() {
@@ -26,14 +28,58 @@ public class App extends Frame{
         add("Center", appCanvas);
         setCursor(Cursor.getPredefinedCursor( Cursor.CROSSHAIR_CURSOR));
         setVisible(true);
-        appCanvas.run(n);
     }
     public static void main(String[] args) {
          new App(10);
     }
 
+    /**
+     * Returns a Node[][]
+     * @return Node[][]
+     */
+    public Node[][] getBoard() {
+        return this.appCanvas.board;
+    }
+
+    public Graph<Node> getGraph() {
+        Node[][] board = this.getBoard();
+
+        //Generate the graph
+        Graph<Node> graph = new Graph<Node>();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                graph.addVertex(board[i][j]);
+
+                if (i > 0) {
+                    // Add edge to node above
+                    graph.addEdge(board[i][j], board[i-1][j]);
+                    graph.addEdge(board[i-1][j], board[i][j]);
+                }
+
+                if (j > 0) {
+                    // Add edge to node behind
+                    graph.addEdge(board[i][j], board[i][j-1]);
+                    graph.addEdge(board[i][j-1], board[i][j]);
+                }
+            }
+        } 
+
+        return graph;
+    }
+
+    public void visitNode(Node node) {
+        node.visit();
+        System.out.println("visited a node");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        this.appCanvas.repaint();
+    }
 }
 
+// Class to hold the canvas
 class CvApp extends Canvas {
     int centerX, centerY;
     float pixelSize, rWidth = 10.0F, rHeight = 10.0F, xP = 1000000, yP;
@@ -56,34 +102,6 @@ class CvApp extends Canvas {
                 this.board[i][j] = new Node(i+j);
             }
         }
-    }
-
-    /**
-     * 
-     */
-    public void run(int n) {
-
-        //Generate the graph
-        Graph<Node> graph = new Graph<Node>();
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                graph.addVertex(this.board[i][j]);
-
-                if (i > 0) {
-                    // Add edge to node above
-                    graph.addEdge(this.board[i][j], this.board[i-1][j]);
-                    graph.addEdge(this.board[i-1][j], this.board[i][j]);
-                }
-
-                if (j > 0) {
-                    // Add edge to node behind
-                    graph.addEdge(this.board[i][j], this.board[i][j-1]);
-                    graph.addEdge(this.board[i][j-1], this.board[i][j]);
-                }
-            }
-        }
-        BreadthFirstSearch.bfs(graph, this.board[1][1]);
-        repaint();
     }
 
     void initGraphics() {
@@ -113,12 +131,12 @@ class CvApp extends Canvas {
 
     public void paint(Graphics g) {
         initGraphics();
-        int left = iX(-rWidth / 2);
-        int right = iX(rWidth / 2);
-        int bottom = iY(-rHeight / 2);
-        int top = iY(rHeight / 2);
-        int xMiddle = iX(0);
-        int yMiddle = iY(0);
+        // int left = iX(-rWidth / 2);
+        //int right = iX(rWidth / 2);
+        //int bottom = iY(-rHeight / 2);
+        //int top = iY(rHeight / 2);
+        //int xMiddle = iX(0);
+        //int yMiddle = iY(0);
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
