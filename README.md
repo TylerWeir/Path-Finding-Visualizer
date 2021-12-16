@@ -10,4 +10,3 @@ I implemented this project in Java so that I could practice Java graphics as wel
 * Depth First Search
 * Breadth First Search
 * Dijkstra's Algorithm
-* A-Star
