@@ -87,6 +87,7 @@ class CvApp extends Canvas {
     int centerX, centerY;
     float pixelSize, rWidth = 10.0F, rHeight = 10.0F;
     Node[][] board;
+    Node starterNode;
     int gridSize = 20;
     boolean isRunning;
 
@@ -102,6 +103,8 @@ class CvApp extends Canvas {
             }
         }
 
+        this.starterNode = this.board[0][0];
+
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent evt) {
                 // If the simulation is not running then change the state of the clicked square
@@ -115,11 +118,17 @@ class CvApp extends Canvas {
                     int i = (int)Math.floor((double)(5f - yP)/rectSize);
                     int j = (-1) * (int)Math.floor((double)(-5f - xP)/rectSize) - 1;
 
-                    if(i >= 0 && i < gridSize && j >= 0 && j < gridSize) {
-                        if(evt.getButton() == MouseEvent.BUTTON1){
-                            board[i][j].toggleState();
+                    if (i >= 0 && i < gridSize && j >= 0 && j < gridSize) {
+                        if (evt.getButton() == MouseEvent.BUTTON1){
+                            if (board[i][j] != starterNode) {
+                                board[i][j].toggleState();
+                            }
                         }
-
+                        if (evt.getButton() == MouseEvent.BUTTON3){
+                            if(board[i][j].isActive()) {
+                                starterNode = board[i][j];
+                            }
+                        }
                     }
                     repaint();
                 }
@@ -128,7 +137,7 @@ class CvApp extends Canvas {
     }
 
     void ProgramLoop() {
-
+        
     }
 
     void initGraphics() {
@@ -174,6 +183,8 @@ class CvApp extends Canvas {
                     g.setColor((Color.red));
                 } else if (!this.board[i][j].isActive()) {
                     g.setColor(Color.BLACK);
+                } else if (this.board[i][j] == this.starterNode) {
+                    g.setColor(Color.green);
                 }else {
                     g.setColor(Color.lightGray);
                 }
