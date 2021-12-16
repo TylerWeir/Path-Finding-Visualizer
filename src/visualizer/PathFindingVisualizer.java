@@ -2,6 +2,8 @@ package visualizer;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
+
 import graph.*;
 import util.*;
 
@@ -22,59 +24,31 @@ public class PathFindingVisualizer extends Frame{
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {System.exit(0);}
         });
-        setSize(400, 300);
-        add("Center", new CvApp());
+        setSize(500, 500);
+        setResizable(true);
+        this.appCanvas = new CvApp();
+        add("Center", this.appCanvas);
         setCursor(Cursor.getPredefinedCursor( Cursor.CROSSHAIR_CURSOR));
         setVisible(true);
     }
 
     public static void main(String[] args) {
-        new PathFindingVisualizer();
-    }
+        PathFindingVisualizer pfv = new PathFindingVisualizer();
+        System.out.println("========== Welcome to Pathfinding Visualizer ==========");
+        System.out.println(" - left mouse click to toggle squares");
+        System.out.println(" - right mouse click to set starting square");
+        System.out.println();
+        System.out.println("[Option 1] Depth First Search");
+        System.out.println("[Option 2] Breadth First Search");
+        System.out.println("[Option 3] Djikstra's Algorithm");
+        System.out.println("[Option 4] A-Star");
+        System.out.println();
+        System.out.print("Chose an algorithm to visualize (1-4): ");
+        Scanner userInput = new Scanner(System.in);
 
-    /**
-     * Returns a Node[][]
-     * @return Node[][]
-     */
-    public Node[][] getBoard() {
-        return this.appCanvas.board;
-    }
+        pfv.appCanvas.runAlgorithm(userInput.nextInt());
 
-    public Graph<Node> getGraph() {
-        Node[][] board = this.getBoard();
-
-        //Generate the graph
-        Graph<Node> graph = new Graph<Node>();
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                graph.addVertex(board[i][j]);
-
-                if (i > 0) {
-                    // Add edge to node above
-                    graph.addEdge(board[i][j], board[i-1][j]);
-                    graph.addEdge(board[i-1][j], board[i][j]);
-                }
-
-                if (j > 0) {
-                    // Add edge to node behind
-                    graph.addEdge(board[i][j], board[i][j-1]);
-                    graph.addEdge(board[i][j-1], board[i][j]);
-                }
-            }
-        } 
-
-        return graph;
-    }
-
-    public void visitNode(Node node) {
-        node.visit();
-        System.out.println("visited a node");
-        try {
-            Thread.sleep(250);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        this.appCanvas.repaint();
+        userInput.close();
     }
 }
 
@@ -83,12 +57,12 @@ public class PathFindingVisualizer extends Frame{
  * easy and intuitive drawing.  This class will be used for drawing the n x n grid that the 
  * algorithm will traverse. Eventually it will handle the mouse input to add and remove nodes and such. 
  */
-class CvApp extends Canvas {
+class CvApp extends DoubleBuffer {
     int centerX, centerY;
     float pixelSize, rWidth = 10.0F, rHeight = 10.0F;
     Node[][] board;
     Node starterNode;
-    int gridSize = 20;
+    int gridSize = 40;
     boolean isRunning;
 
     // Default constructor
@@ -136,8 +110,129 @@ class CvApp extends Canvas {
         });
     }
 
-    void ProgramLoop() {
-        
+    Graph<Node> buildGraph() {
+        Graph<Node> graph = new Graph<Node>();
+
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+
+                if (board[i][j].isActive()) {
+                    graph.addVertex(board[i][j]);
+
+                    if (i > 0 && board[i-1][j].isActive()) {
+                        // Add edge to node above
+                        graph.addEdge(board[i][j], board[i-1][j]);
+                        graph.addEdge(board[i-1][j], board[i][j]);
+                    }
+
+                    if (j > 0 && board[i][j-1].isActive()) {
+                        // Add edge to node behind
+                        graph.addEdge(board[i][j], board[i][j-1]);
+                        graph.addEdge(board[i][j-1], board[i][j]);
+                    }
+                }
+            }
+        }
+
+        return graph;
+    }
+
+    void runAlgorithm(int n) {
+        // This blocks any more mouse input.
+        this.isRunning = true;
+
+        // Build the graph from the board
+        Graph<Node> graph = buildGraph(); 
+
+        // release the algorithm!
+        switch(n) {
+            case 1:
+                // DFS
+                dfs(graph, starterNode);
+                break;
+            case 2:
+                bfs(graph, starterNode);
+                break;
+            case 3:
+                djikstra();
+                break;
+            case 4:
+                astar();
+                break;
+            default:
+                System.out.println("Invalid option. Exiting...");
+                System.exit(0);
+        }
+    
+    }
+    
+    /**
+     * 
+     * @param graph
+     * @param s
+     */
+    void dfs(Graph<Node> graph, Node s) {
+        Stack<Node> S = new Stack<Node>();
+        S.push(s);
+
+        while (!S.empty()) {
+            Node u = S.pop();
+            if(!u.isVisited()) {
+                visitNode(u);
+                for (Node n : graph.getNeighbors(u)) {
+                    if(!n.isVisited()) {
+                        S.push(n);
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 
+     * @param graph
+     * @param s
+     */
+    void bfs(Graph<Node> graph, Node s) {
+        Queue<Node> Q = new LinkedList<Node>();
+        Q.add(s);
+
+        while(!Q.isEmpty()) {
+            Node u = Q.remove();
+
+            for (Node v : graph.getNeighbors(u)) {
+                if (!v.isVisited()) {
+                    Q.add(v);
+                    visitNode(v);
+                }
+            }
+        }
+    } 
+
+    /**
+     * 
+     */
+    void djikstra() {
+
+    }
+
+    /**
+     * 
+     */
+    void astar() {
+
+    }
+    
+    void visitNode(Node n) {
+        n.visit();
+        repaint();
+
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     void initGraphics() {
@@ -165,7 +260,7 @@ class CvApp extends Canvas {
         return (centerY - y) * pixelSize;
     }
 
-    public void paint(Graphics g) {
+    public void paintBuffer(Graphics g) {
         initGraphics();
         // int left = iX(-rWidth / 2);
         //int right = iX(rWidth / 2);
