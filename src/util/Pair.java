@@ -10,8 +10,8 @@ public class Pair<P, E> {
 	public E element;
 	
 	public Pair(P p, E e) {
-		priority = p;
-		element = e;
+		this.priority = p;
+		this.element = e;
 	}
 }
 

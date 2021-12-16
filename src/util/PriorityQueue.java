@@ -14,17 +14,17 @@ import java.util.Map;
  * @version September 27, 2021 
  *
  */
-public class PriorityQueue {
+public class PriorityQueue<V>{
 
     //	protected Map<Integer, Integer> location;
-    protected Map<Integer, Integer> location;
-	protected List<Pair<Integer, Integer>> heap;
+    protected Map<V, Integer> location;
+	protected List<Pair<Integer, V>> heap;
 	/**
 	 *  Constructs an empty priority queue
 	 */
 	public PriorityQueue() {
-       this.location = new HashMap<Integer, Integer>();
-       this.heap = new ArrayList<Pair<Integer, Integer>>();
+       this.location = new HashMap<V, Integer>();
+       this.heap = new ArrayList<Pair<Integer, V>>();
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class PriorityQueue {
 	 *	</ul>
 	 *  
 	 */
-	public void push(int priority, int element) {
+	public void push(int priority, V element) {
         if (this.location.containsKey(element)) {
 			throw new IllegalStateException("The priority queue already contains the element: " + element);
         }
@@ -50,9 +50,9 @@ public class PriorityQueue {
         }
 
         // Tack element to the end of the heap and add to map
-        Pair<Integer, Integer> p = new Pair<Integer,Integer>(priority, element);
+        Pair<Integer, V> p = new Pair<Integer, V>(priority, element);
         this.heap.add(p);
-        this.location.put((int)p.element, this.heap.size()-1);
+        this.location.put(p.element, this.heap.size()-1);
         
         //  Return if this is the root
         if (heap.size() == 1) {
@@ -77,7 +77,7 @@ public class PriorityQueue {
         } 
 
         // Swap root with last element and remove the old root from the heap and map
-        int element = getElement(0);
+        V element = getElement(0);
         swap(0, this.heap.size()-1);
         this.location.remove(element);
         this.heap.remove(this.heap.size()-1);
@@ -98,7 +98,7 @@ public class PriorityQueue {
 		if (isEmpty()) {
 			throw new IllegalStateException("The priority queue is empty. No priority to return.");
 		}
-        return (int)heap.get(0).priority;
+        return heap.get(0).priority;
 	}
 
 	/**
@@ -110,11 +110,11 @@ public class PriorityQueue {
 	 *	<li> The priority queue is non-empty.</li>
 	 *	</ul>
 	 */
-	public int topElement() {
+	public V topElement() {
         if (isEmpty()) {
             throw new IllegalStateException("The priority queue is empty. No element to return.");
         }
-        return (int)this.heap.get(0).element;
+        return this.heap.get(0).element;
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class PriorityQueue {
 	 *	<li> The new priority is non-negative </li>
 	 *	</ul>
 	 */
-	public void changePriority(int element, int newPriority) {
+	public void changePriority(V element, int newPriority) {
 		//System.out.println("Changing Priority of element " + element + " to " + newPriority);
 		if (!this.location.containsKey(element)) { 
 			throw new IllegalStateException("The specified element does not exist in the priority queue.");
@@ -164,7 +164,7 @@ public class PriorityQueue {
 	 *	<li> The element exists in the priority queue</li>
 	 *	</ul>
 	 */
-	public int getPriority(int element) {
+	public int getPriority(V element) {
 		if(!this.location.containsKey(element)){
 			throw new IllegalStateException(element + " is not contained in the priority queue.");
 		}
@@ -305,8 +305,8 @@ public class PriorityQueue {
 	 * @param j The index of the element to be swapped
 	 */
 	private void swap(int i, int j) {
-        int elementI = getElement(i); 
-        int elementJ = getElement(j);
+        V elementI = getElement(i); 
+        V elementJ = getElement(j);
 
         Collections.swap(this.heap, i, j);
         this.location.put(elementI, j);
@@ -347,8 +347,8 @@ public class PriorityQueue {
     /**
      * Returns the element at a given index.
      **/
-    private int getElement(int index) {
-        return (int)this.heap.get(index).element;
+    private V getElement(int index) {
+        return this.heap.get(index).element;
     }
 
 	/**
@@ -369,7 +369,7 @@ public class PriorityQueue {
     /**
      * Compares the priority of the element at index to that of it's parent. 
      * Returns true if the parent is more important, false if the child is more important.  
-     **/
+     */
     private boolean isParentMoreImportant(int index) {
        // Return true if the index is the root and has no parents.
        if (index == 0) {
@@ -377,8 +377,8 @@ public class PriorityQueue {
        }
 
        int parentIndex = calcParentIndex(index);
-       Pair<Integer, Integer> parent = heap.get(parentIndex);
-       Pair<Integer, Integer> child = heap.get(index);
+       Pair<Integer, V> parent = heap.get(parentIndex);
+       Pair<Integer, V> child = heap.get(index);
        //System.out.println("Parent priority: " + parent.priority);
 	   //System.out.println("Child priority: " + child.priority);
        
