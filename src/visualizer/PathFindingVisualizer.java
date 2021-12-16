@@ -3,9 +3,9 @@ package visualizer;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
 import graph.*;
 import util.*;
+import util.PriorityQueue;
 
 /**
  *  This class creates the window frame that holds the application UI.
@@ -40,7 +40,7 @@ public class PathFindingVisualizer extends Frame{
         System.out.println();
         System.out.println("[Option 1] Depth First Search");
         System.out.println("[Option 2] Breadth First Search");
-        System.out.println("[Option 3] Djikstra's Algorithm");
+        System.out.println("[Option 3] Dijkstra's Algorithm");
         System.out.println("[Option 4] A-Star");
         System.out.println();
         System.out.print("Chose an algorithm to visualize (1-4): ");
@@ -154,7 +154,7 @@ class CvApp extends DoubleBuffer {
                 bfs(graph, starterNode);
                 break;
             case 3:
-                djikstra();
+                dijkstra(graph, starterNode);
                 break;
             case 4:
                 astar();
@@ -213,9 +213,42 @@ class CvApp extends DoubleBuffer {
     /**
      * 
      */
-    void djikstra() {
+void dijkstra(Graph<Node> graph, Node s) {
 
+    // A minimum priority queue
+    PriorityQueue<Node> Q = new PriorityQueue<Node>();
+
+    Map<Node, Integer> dist = new HashMap<Node, Integer>();
+    Map<Node, Node> prev = new HashMap<Node, Node>();
+
+    // Initialize distances to infinity and source to zero
+    for(Node n : graph.getVertices()) {
+        dist.put(n, 99999999);
     }
+    dist.put(s, 0);
+
+    // Push all verticies onto the queue with distance as priority
+    for(Node n : graph.getVertices()) {
+        Q.push(dist.get(n), n);
+    }
+
+    while(Q.size() > 1) {
+        Node u = Q.topElement();
+        Q.pop();
+
+        // Iterate over the neighbors
+        for(Node n : graph.getNeighbors(u)) {
+            visitNode(n);
+            int alt = dist.get(u) + 1; // 1 can be replaced by edge weight
+
+            if (alt < dist.get(n)) {
+                dist.put(n, alt);
+                prev.put(n, u);
+                Q.changePriority(n, alt);
+            }
+        }
+    }
+}
 
     /**
      * 
