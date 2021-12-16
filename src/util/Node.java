@@ -1,16 +1,27 @@
 package util;
 
 public class Node {
-    boolean visited;
-    int value;
+    private boolean visited;
+    private boolean isActive;
+    private int value;
+    
     
     public Node(int value) {
         this.value = value;
         this.visited = false;
+        this.isActive = true;
     }
 
     public int getValue() {
         return this.value;
+    }
+
+    public boolean isActive() {
+        return this.isActive;
+    }
+
+    public void toggleState() {
+        this.isActive = !this.isActive;
     }
 
     public void visit() {
@@ -21,6 +32,7 @@ public class Node {
         return this.visited;
     }
 
+    /*
     @Override
     public boolean equals(Object obj) {
         // Check for same type
@@ -30,4 +42,5 @@ public class Node {
 
         return ((Node)obj).getValue() == this.getValue();
     }
+    */
 }

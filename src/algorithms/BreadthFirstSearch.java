@@ -7,12 +7,8 @@ import visualizer.*;
 
 public class BreadthFirstSearch {
 
-    public static void bfs(Graph<Node> graph, Node s) {
-
-    }
-
     public static void main(String[] args) {
-        App app = new App(10);
+        PathFindingVisualizer app = new PathFindingVisualizer();
         Graph<Node> graph = app.getGraph();
         Node s = app.getBoard()[1][1];
 
