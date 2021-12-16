@@ -41,9 +41,8 @@ public class PathFindingVisualizer extends Frame{
         System.out.println("[Option 1] Depth First Search");
         System.out.println("[Option 2] Breadth First Search");
         System.out.println("[Option 3] Dijkstra's Algorithm");
-        System.out.println("[Option 4] A-Star");
         System.out.println();
-        System.out.print("Chose an algorithm to visualize (1-4): ");
+        System.out.print("Chose an algorithm to visualize (1-3): ");
         Scanner userInput = new Scanner(System.in);
 
         pfv.appCanvas.runAlgorithm(userInput.nextInt());
@@ -156,9 +155,6 @@ class CvApp extends DoubleBuffer {
             case 3:
                 dijkstra(graph, starterNode);
                 break;
-            case 4:
-                astar();
-                break;
             default:
                 System.out.println("Invalid option. Exiting...");
                 System.exit(0);
@@ -167,9 +163,10 @@ class CvApp extends DoubleBuffer {
     }
     
     /**
+     * An implementation of the Depth First Search graph traversal algorithm.
      * 
-     * @param graph
-     * @param s
+     * @param graph The graph the algorithm will explore
+     * @param s The node from which the algoithm will start exploring
      */
     void dfs(Graph<Node> graph, Node s) {
         Stack<Node> S = new Stack<Node>();
@@ -190,9 +187,10 @@ class CvApp extends DoubleBuffer {
     }
 
     /**
+     * An implementation of the Breadth First Search graph traversal algorithm.
      * 
-     * @param graph
-     * @param s
+     * @param graph The graph the algorithm will explore
+     * @param s The node from which the algorithm will start exploring
      */
     void bfs(Graph<Node> graph, Node s) {
         Queue<Node> Q = new LinkedList<Node>();
@@ -211,52 +209,49 @@ class CvApp extends DoubleBuffer {
     } 
 
     /**
+     * An implementation of Dijkstra's Algorithm. Note that the edge weights are all 
+     * equal to 1.
      * 
+     * @param graph The graph to traverse.
+     * @param s The node from which the algoithm will start exploring.
      */
-void dijkstra(Graph<Node> graph, Node s) {
+    void dijkstra(Graph<Node> graph, Node s) {
 
-    // A minimum priority queue
-    PriorityQueue<Node> Q = new PriorityQueue<Node>();
+        // A minimum priority queue
+        PriorityQueue<Node> Q = new PriorityQueue<Node>();
 
-    Map<Node, Integer> dist = new HashMap<Node, Integer>();
-    Map<Node, Node> prev = new HashMap<Node, Node>();
+        Map<Node, Integer> dist = new HashMap<Node, Integer>();
+        Map<Node, Node> prev = new HashMap<Node, Node>();
 
-    // Initialize distances to infinity and source to zero
-    for(Node n : graph.getVertices()) {
-        dist.put(n, 99999999);
-    }
-    dist.put(s, 0);
+        // Initialize distances to infinity and source to zero
+        for(Node n : graph.getVertices()) {
+            dist.put(n, 99999999);
+        }
+        dist.put(s, 0);
 
-    // Push all verticies onto the queue with distance as priority
-    for(Node n : graph.getVertices()) {
-        Q.push(dist.get(n), n);
-    }
+        // Push all verticies onto the queue with distance as priority
+        for(Node n : graph.getVertices()) {
+            Q.push(dist.get(n), n);
+        }
 
-    while(Q.size() > 1) {
-        Node u = Q.topElement();
-        Q.pop();
+        while(Q.size() > 1) {
+            Node u = Q.topElement();
+            Q.pop();
 
-        // Iterate over the neighbors
-        for(Node n : graph.getNeighbors(u)) {
-            visitNode(n);
-            int alt = dist.get(u) + 1; // 1 can be replaced by edge weight
+            // Iterate over the neighbors
+            for(Node n : graph.getNeighbors(u)) {
+                visitNode(n);
+                int alt = dist.get(u) + 1; // 1 can be replaced by edge weight
 
-            if (alt < dist.get(n)) {
-                dist.put(n, alt);
-                prev.put(n, u);
-                Q.changePriority(n, alt);
+                if (alt < dist.get(n)) {
+                    dist.put(n, alt);
+                    prev.put(n, u);
+                    Q.changePriority(n, alt);
+                }
             }
         }
     }
-}
 
-    /**
-     * 
-     */
-    void astar() {
-
-    }
-    
     void visitNode(Node n) {
         n.visit();
         repaint();
