@@ -7,7 +7,7 @@ This project was implemented with the goal of gaining a better intuitive underst
 I implemented this project in Java so that I could practice Java graphics as well as reuse the Graph and Priority Queue classes I made for my Algorithms course.
 
 ### Algorithms
-* Depthfirst Search
-* Breadthfirst Search
+* Depth First Search
+* Breadth First Search
 * Dijkstra's Algorithm
 * A-Star
