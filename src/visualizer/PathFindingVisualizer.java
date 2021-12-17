@@ -17,7 +17,9 @@ public class PathFindingVisualizer extends Frame{
 
     public CvApp appCanvas;
 
-    // Default constructor for the application
+    /**
+     * Defualt constructor.
+     */
     public PathFindingVisualizer() {
         // Init up the graphical ui
         super("Path Finding Algorithm Visualizer");
@@ -52,9 +54,14 @@ public class PathFindingVisualizer extends Frame{
 }
 
 /**
- * This class is an extention of canvas.  It maps logical coordinates to device coordinates for 
- * easy and intuitive drawing.  This class will be used for drawing the n x n grid that the 
- * algorithm will traverse. Eventually it will handle the mouse input to add and remove nodes and such. 
+ * This class is an extention of Canvas. It maps logical coordinates to device coordinates for 
+ * easy and intuitive drawing. This class displays an n x n grid and then allows 
+ * a path finding algorithm to explore the grid as though each square were vertex 
+ * in a graph. Each square is connected to its adjacent squares. Squares may be turned 
+ * off and on by clicking on them. The green square is the starting position of the algorithms. 
+ * The greeen square position may be set by right clicking. 
+ * 
+ * @author Tyler Weir
  */
 class CvApp extends DoubleBuffer {
     int centerX, centerY;
@@ -72,7 +79,7 @@ class CvApp extends DoubleBuffer {
         this.board = new Node[gridSize][gridSize];
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
-                this.board[i][j] = new Node(i+j);
+                this.board[i][j] = new Node();
             }
         }
 
@@ -109,6 +116,12 @@ class CvApp extends DoubleBuffer {
         });
     }
 
+    /**
+     * Builds a graph from the state of the squares in the grid. Black 
+     * squares are considered inactive and will not have a vertex represenation.
+     * 
+     * @return A graph of nodes.
+     */
     Graph<Node> buildGraph() {
         Graph<Node> graph = new Graph<Node>();
 
@@ -136,6 +149,12 @@ class CvApp extends DoubleBuffer {
         return graph;
     }
 
+
+    /**
+     * This function starts the specified algorithm at the starter node.
+     * 
+     * @param n The indicated algorithm. 1 = dfs, 2 = bfs, 3 = dijkstra's
+     */
     void runAlgorithm(int n) {
         // This blocks any more mouse input.
         this.isRunning = true;
@@ -252,6 +271,14 @@ class CvApp extends DoubleBuffer {
         }
     }
 
+
+    /**
+     * This funciton is used to mark a square as visited on the GUI.  It must
+     * be called by the graph traversal algorithm to see a graphical output of
+     * the behavior of the output. 
+     * 
+     * @param n The node that was visited.
+     */
     void visitNode(Node n) {
         n.visit();
         repaint();
@@ -263,6 +290,10 @@ class CvApp extends DoubleBuffer {
         }
     }
 
+    /**
+     * This funciton calculates graphical variables for easy drawing no matter
+     * the window size. 
+     */
     void initGraphics() {
         Dimension d = getSize();
         int maxX = d.width - 1;
@@ -272,22 +303,46 @@ class CvApp extends DoubleBuffer {
         centerY = maxY / 2;
     }
 
-    int iX(float x) {
+     /**
+     * Maps a logical float coordinate to the integer device coordinate.
+     * @param x
+     * @return The device integer coordinate.
+     */
+   int iX(float x) {
         return Math.round(centerX + x / pixelSize);
     }
-
-    int iY(float y) {
+    
+     /**
+     *  Maps the logical flaot coordinate to the integer device coordinate. 
+     * @param y
+     * @return Th device integer coordinate.
+     */
+   int iY(float y) {
         return Math.round(centerY - y / pixelSize);
     }
 
-    float fx(int x) {
+     /**
+     * Maps an integer device coordinate to a logical float coordinate
+     * @param x
+     * @return The logical float value. 
+     */
+   float fx(int x) {
         return (x - centerX) * pixelSize;
     }
 
-    float fy(int y) {
+     /**
+     * Maps an integer device coordinate to a logical float coordinate
+     * @param y
+     * @return The Logical float value.
+     */
+   float fy(int y) {
         return (centerY - y) * pixelSize;
     }
-
+    
+    /**
+     * Overrides the Canvas paint funciton.  Paints the grid and the state
+     * of nodes are represented by their color.  
+     */
     public void paintBuffer(Graphics g) {
         initGraphics();
         // int left = iX(-rWidth / 2);
