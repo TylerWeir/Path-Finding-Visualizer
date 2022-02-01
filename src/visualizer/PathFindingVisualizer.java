@@ -30,7 +30,7 @@ public class PathFindingVisualizer extends Frame{
         setResizable(true);
         this.appCanvas = new CvApp();
         add("Center", this.appCanvas);
-        setCursor(Cursor.getPredefinedCursor( Cursor.CROSSHAIR_CURSOR));
+        setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         setVisible(true);
     }
 
@@ -68,7 +68,7 @@ class CvApp extends DoubleBuffer {
     float pixelSize, rWidth = 10.0F, rHeight = 10.0F;
     Node[][] board;
     Node starterNode;
-    int gridSize = 40;
+    int gridSize = 100;
     boolean isRunning;
 
     // Default constructor
@@ -284,7 +284,7 @@ class CvApp extends DoubleBuffer {
         repaint();
 
         try {
-            Thread.sleep(100);
+            Thread.sleep(5);
         } catch (Exception e) {
             e.printStackTrace();
         }
